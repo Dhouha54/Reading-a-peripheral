@@ -1,0 +1,136 @@
+/**
+  ******************************************************************************
+  * @file    GPIO/main.c 
+  * @author  CSF/STM32 Training/ Halim Kacem
+  * @version V1.0.0
+  * @date    04/01/2011
+  * @brief   Main program body.
+  ******************************************************************************
+  * @copy
+  *
+  * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+  * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
+  * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
+  * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
+  * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
+  * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  *
+  * <h2><center>&copy; COPYRIGHT 2010 STMicroelectronics</center></h2>
+  */ 
+
+/* Includes ------------------------------------------------------------------*/
+#include "stm32f10x.h"
+
+
+/** @addtogroup Examples
+  * @{
+  */
+
+/* Private typedef -----------------------------------------------------------*/
+/* Private define ------------------------------------------------------------*/
+/* Private macro -------------------------------------------------------------*/
+/* Private variables ---------------------------------------------------------*/
+GPIO_InitTypeDef GPIO_InitStructure;
+
+/* Private function prototypes -----------------------------------------------*/
+void Delay(__IO uint32_t nCount);
+
+/* Private functions ---------------------------------------------------------*/
+uint8_t  button_state; 
+/**
+  * @brief  Main program.
+  * @param  None
+  * @retval None
+  */
+int main(void)
+{
+  /*!< At this stage the microcontroller clock setting is already configured, 
+       this is done through SystemInit() function which is called from startup
+       file (startup_stm32f10x_xx.s) before to branch to application main.
+       To reconfigure the default setting of SystemInit() function, refer to
+       system_stm32f10x.c file
+     */     
+       uint8_t etat;
+	
+ /* GPIOs clock enable */
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC|RCC_APB2Periph_GPIOA, ENABLE);  
+ 
+  /* set GPIO's peripheral registers to their reset values */
+  GPIO_DeInit(GPIOC);
+	 GPIO_DeInit(GPIOA);
+
+  /* Initialize Leds LD3 and LD4 mounted on STM32VLDISCOVERY board */
+   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 |GPIO_Pin_9 ;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz ;
+  GPIO_Init(GPIOC, &GPIO_InitStructure);
+	 
+	 
+	 /* Initialize Button Pin on STM32VLDISCOVERY board */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz ;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+  GPIO_ResetBits(GPIOC, GPIO_Pin_9|GPIO_Pin_8);
+  
+  while (1)
+  {
+		
+ 
+		
+   if  (GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0)) 
+	       { 
+					 GPIO_SetBits(GPIOC, GPIO_Pin_8); 
+           GPIO_ResetBits(GPIOC, GPIO_Pin_9);
+		       //Delay(0xAFFFF);
+        }
+	 else 
+		   { 
+					 GPIO_SetBits(GPIOC, GPIO_Pin_9); 
+           GPIO_ResetBits(GPIOC, GPIO_Pin_8);
+		       //Delay(0xAFFFF);
+        }
+}
+	}
+
+/**
+  * @brief  Inserts a delay time.
+  * @param  nCount: specifies the delay time length.
+  * @retval None
+  */
+void Delay(__IO uint32_t nCount)
+{
+  for(; nCount != 0; nCount--);
+}
+
+#ifdef  USE_FULL_ASSERT
+/**
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
+void assert_failed(uint8_t* file, uint32_t line)
+{ 
+  /* User can add his own implementation to report the file name and line number,
+     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+
+  /* Infinite loop */
+  while (1)
+  {
+  }
+}
+#endif
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/******************* (C) COPYRIGHT 2010 STMicroelectronics *****END OF FILE****/
